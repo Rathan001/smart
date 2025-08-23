@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2E7D32" />
+    <meta name="description" content="Smart Digital Crop Management System" />
+
+    <title>Digital Crop Tracker</title>
+
+    <!-- Tailwind CSS (optional if used in React) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fdf9;
+        margin: 0;
+        padding: 0;
+      }
+
+      .loader {
+        border: 6px solid #e0f2e9;
+        border-top: 6px solid #2E7D32;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #loading-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f0fdf4;
+        color: #2E7D32;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+
+    <!-- Initial Loading Screen (Optional) -->
+    <div id="loading-screen">
+      <div class="loader"></div>
+      <p class="mt-4 text-lg font-semibold">Loading Crop Manager...</p>
+    </div>
+
+    <!-- React App Root -->
+    <div id="root" style="display: none;"></div>
+
+    <!-- Script to hide loading screen when React loads -->
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const root = document.getElementById('root');
+        const loader = document.getElementById('loading-screen');
+        if (root && loader) {
+          root.style.display = 'block';
+          loader.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>

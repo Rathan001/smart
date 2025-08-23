@@ -1,0 +1,168 @@
+/* General container styling */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 25px;
+  background: linear-gradient(135deg, #ffffff, #f9f9f9);
+  border-radius: 18px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+/* Header styling */
+.container h2 {
+  text-align: center;
+  font-size: 2.6rem;
+  color: #2e7d32;
+  margin-bottom: 25px;
+  text-shadow: 1px 2px 4px rgba(76, 175, 80, 0.2);
+  letter-spacing: 1px;
+}
+
+.container h3 {
+  font-size: 1.9rem;
+  color: #222;
+  margin-top: 35px;
+  margin-bottom: 18px;
+  border-bottom: 3px solid #4CAF50;
+  display: inline-block;
+  padding-bottom: 6px;
+  position: relative;
+}
+
+.container h3::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, #4CAF50, #81C784);
+  border-radius: 2px;
+}
+
+/* User info styling */
+.container p {
+  font-size: 1.15rem;
+  margin: 10px 0;
+  color: #444;
+  line-height: 1.6;
+}
+
+.container strong {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Crop history styling */
+.crop-history {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.crop-history li {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crop-history li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #fdfdfd, #f7fff9);
+}
+
+.crop-history li span {
+  font-size: 1.15rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Seasonal data comparison styling */
+.seasonal-data {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 35px;
+  gap: 22px;
+}
+
+.seasonal-card {
+  flex: 1;
+  text-align: center;
+  padding: 22px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.seasonal-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
+.spring-summer {
+  background: linear-gradient(135deg, #66bb6a, #43a047);
+}
+
+.fall-winter {
+  background: linear-gradient(135deg, #ffa726, #fb8c00);
+}
+
+/* Loading state styling */
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #666;
+  margin-top: 50px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* Logout button styling */
+.logout-button {
+  background: linear-gradient(135deg, #e53935, #c62828);
+  color: white;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  margin-top: 25px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.logout-button:hover {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  transform: translateY(-3px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .seasonal-data {
+    flex-direction: column;
+  }
+
+  .seasonal-card {
+    margin: 12px 0;
+  }
+}

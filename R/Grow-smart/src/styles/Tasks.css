@@ -1,0 +1,187 @@
+.tasks-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tasks-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1b5e20;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.task-input-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.task-input {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.task-input:focus {
+  border-color: #2e7d32;
+}
+
+.task-add-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.task-add-btn:hover {
+  background-color: #388e3c;
+}
+
+.loading-text,
+.no-tasks-text {
+  text-align: center;
+  color: gray;
+}
+
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.task-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+}
+
+.task-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.task-priority {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.task-priority span {
+  font-weight: bold;
+  color: #ff9800;
+}
+
+.task-delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #f44336;
+  transition: color 0.3s ease;
+}
+
+.task-delete-btn:hover {
+  color: #c62828;
+}
+.reminder-card {
+  background-color: #eaf7ff;
+  border-left: 5px solid #4da6ff;
+}
+
+.status-reminder {
+  color: #0077cc;
+  font-weight: bold;
+}
+
+.status-upcoming {
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Notifications Section */
+.notifications {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.toast {
+  min-width: 250px;
+  background: #4caf50; /* default green */
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: slideIn 0.5s ease, fadeOut 0.5s ease 3.5s forwards;
+  opacity: 0.95;
+}
+
+/* Priority Colors */
+.toast.low {
+  background: #4caf50; /* Green */
+}
+.toast.medium {
+  background: #ff9800; /* Orange */
+}
+.toast.high {
+  background: #f44336; /* Red */
+}
+
+/* Animations */
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(100%); }
+}
