@@ -10,6 +10,7 @@
   --secondary-earth-dark: #654321;
   
   --accent-sky: #87ceeb;
+
   --accent-sky-light: #b0e0e6;
   --accent-sky-dark: #4682b4;
   
@@ -1368,3 +1369,678 @@ body {
 .dashboard-subtitle {
   color: var(--text-secondary);
 }
+/*new/
+/* ============================
+   AUTH PAGES (Login & Register)
+============================ */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f0fff4 0%, #e6f7ec 50%, #ffffff 100%);
+  padding: 2rem;
+}
+
+.auth-card {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  box-shadow: 0 12px 30px rgba(107, 203, 119, 0.15);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 460px;
+  animation: slideFadeIn 0.8s ease-out;
+  transition: transform 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-4px);
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: #2f4f2f;
+}
+
+.text-secondary {
+  color: #5f7161;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.9rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.25s ease;
+  background-color: #f9fafb;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: #6BCB77;
+  box-shadow: 0 0 0 4px rgba(107, 203, 119, 0.2);
+  background-color: #ffffff;
+  transform: scale(1.01);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6BCB77, #57b368);
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(107, 203, 119, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #57b368, #4aa85e);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 18px rgba(107, 203, 119, 0.35);
+}
+
+.btn-secondary {
+  background-color: #E9FBE7;
+  color: #2f4f2f;
+}
+
+.btn-secondary:hover {
+  background-color: #D5F6D2;
+}
+
+/* Links */
+.auth-link {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.auth-link a {
+  color: #6BCB77;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+  color: #57b368;
+}
+
+/* Messages */
+.text-error {
+  color: #dc2626;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.text-success {
+  color: #16a34a;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+/* Crop suggestions */
+.crop-suggestions {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.crop-suggestions ul {
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+  list-style-type: disc;
+}
+
+.crop-suggestions li:hover {
+  text-decoration: underline;
+  color: #6BCB77;
+}
+
+/* Animations */
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/*dashhhhh/
+/* ==========================
+   🌱 GrowSmart Dashboard Styling (PlantsGuru Inspired)
+========================== */
+
+/* --- Navbar --- */
+.dashboard-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e6f4ee;
+  box-shadow: 0 2px 6px rgba(45, 122, 70, 0.08);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.dashboard-navbar .logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2d7a46;
+  text-decoration: none;
+}
+
+.dashboard-navbar .nav-links {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.dashboard-navbar .nav-links a {
+  color: #374151;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.25s ease, background 0.25s ease;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.dashboard-navbar .nav-links a:hover {
+  color: #2d7a46;
+  background: #e8f9f0;
+}
+
+.dashboard-navbar .nav-links a.active {
+  color: #ffffff;
+  background: #34d399;
+  border-radius: 8px;
+}
+
+.dashboard-navbar .nav-btn {
+  background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+  color: #064e3b;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.dashboard-navbar .nav-btn:hover {
+  background: linear-gradient(135deg, #6ee7b7, #34d399);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 122, 70, 0.12);
+}
+
+/* --- Dashboard Wrapper --- */
+.dashboard {
+  background: #f9fcfa;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* --- Header --- */
+.dashboard-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2d7a46;
+}
+
+.dashboard-header p {
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+/* --- Cards --- */
+.card {
+  background: #ffffff;
+  border: 1px solid #e6f4ee;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(45, 122, 70, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(45, 122, 70, 0.12);
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2d7a46;
+}
+
+/* --- Stats --- */
+.stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2d7a46;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-error {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-primary {
+  background: #34d399;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #10b981;
+}
+
+.btn-secondary {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.btn-secondary:hover {
+  background: #bae6fd;
+}
+
+.btn-outline {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  border-color: #34d399;
+  background: #f0fdf4;
+  color: #065f46;
+}
+
+/* --- Crop & Task Lists --- */
+.crop-item,
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 0.75rem 0;
+}
+
+.crop-item:last-child,
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.crop-info h4,
+.task-info h4 {
+  font-weight: 600;
+  color: #111827;
+}
+
+.crop-variety,
+.crop-date,
+.task-crop,
+.task-due {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* --- Alerts --- */
+.alert {
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.alert-warning {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde68a;
+}
+/*add photo/
+/* ===============================
+   🌱 PlantsGuru Style Crop Gallery
+   =============================== */
+/* ==========================
+   🌱 PlantsGuru Style Gallery
+   ========================== */
+
+/* 📦 Gallery Grid */
+.crop-gallery {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* 📸 Crop Card */
+.crop-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.crop-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* 📷 Image */
+.crop-card img {
+  width: 100%;
+  height: 260px;              /* ✅ fixed height like PlantsGuru */
+  object-fit: contain;        /* ✅ show full plant image */
+  background: #f9fafb;        /* light bg behind transparent PNGs */
+  padding: 0.5rem;            /* breathing room like PlantsGuru */
+  display: block;
+}
+
+/* 📑 Caption */
+.crop-card .caption {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-top: 1px solid #f3f4f6;
+}
+
+.crop-card .caption h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.crop-card .caption p {
+  font-size: 0.9rem;
+  color: #16a34a;   /* ✅ PlantsGuru green price-style */
+  font-weight: 500;
+}
+
+/* 👤 Uploader (optional, if you keep it) */
+.crop-card .uploader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: auto;
+}
+
+.crop-card .uploader img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #d1d5db;
+  object-fit: cover;
+}
+
+.crop-card .uploader p {
+  font-size: 0.85rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* 🌿 Upload Box */
+.upload-box {
+  background: #fff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+  border-color: #6ac24d;
+  background: #f9fff7;
+}
+
+.upload-box h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2f855a;
+  margin-bottom: 0.5rem;
+}
+
+.upload-box p {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+/* ✅ Progress Bar */
+.upload-progress {
+  width: 100%;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 1rem;
+  height: 8px;
+}
+
+.upload-progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6ac24d, #4caf50);
+  transition: width 0.4s ease;
+  border-radius: 9999px;
+}
+
+/* 📸 Preview */
+.upload-box img {
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  max-height: 260px;    /* ✅ same as gallery image */
+  width: 100%;
+  object-fit: contain;  /* ✅ show whole plant */
+  background: #f9fafb;
+  padding: 0.5rem;
+}
+/* ==========================
+   🌿 Upload & Add Button Styling
+   ========================== */
+.upload-action-btn,
+.add-photo-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #6ac24d, #4caf50);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover state */
+.upload-action-btn:hover,
+.add-photo-btn:hover {
+  background: linear-gradient(135deg, #43a047, #388e3c);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(67, 160, 71, 0.4);
+}
+
+/* Active/Pressed */
+.upload-action-btn:active,
+.add-photo-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(67, 160, 71, 0.4);
+}
+
+/* ✨ Shine Effect */
+.upload-action-btn::after,
+.add-photo-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: skewX(-20deg);
+  transition: left 0.7s ease;
+}
+
+.upload-action-btn:hover::after,
+.add-photo-btn:hover::after {
+  left: 125%;
+}
+
+/* 🌟 Pulse Animation */
+@keyframes pulseGreen {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(106, 194, 77, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(106, 194, 77, 0);
+  }
+}
+
+.upload-action-btn.pulse,
+.add-photo-btn.pulse {
+  animation: pulseGreen 1.8s infinite;
+}
+/* ==========================
+   🗑️ Light Red Delete Button
+   ========================== */
+.delete-btn {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #ff9aa2, #ff6f61); /* Light fresh red */
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(255, 111, 97, 0.35);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover */
+.delete-btn:hover {
+  background: linear-gradient(135deg, #ff7b89, #ff4d4d); /* slightly deeper on hover */
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(255, 77, 77, 0.4);
+}
+
+/* Active (click) */
+.delete-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(255, 99, 99, 0.35);
+}
+
+/* ✨ Shine effect */
+.delete-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+
+.delete-btn:hover::after {
+  left: 125%;
+}
+
+/* 💓 Light red pulse */
+@keyframes pulseLightRed {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 99, 99, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 99, 99, 0);
+  }
+}
+
+.delete-btn.pulse {
+  animation: pulseLightRed 1.6s infinite;
+}
+
+

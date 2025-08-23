@@ -1,4 +1,3 @@
-// src/pages/CropPhotos.jsx
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -33,7 +32,7 @@ const CropPhotos = () => {
   const db = getFirestore(firebaseApp);
   const auth = getAuth(firebaseApp);
 
-  // ✅ Fetch all photos
+  // ✅ Fetch photos
   useEffect(() => {
     const photosRef = collection(db, "photos");
     const q = query(photosRef, orderBy("createdAt", "desc"));
@@ -72,7 +71,7 @@ const CropPhotos = () => {
     return () => unsubscribe();
   }, []);
 
-  // ✅ Upload handler
+  // ✅ Upload
   const handleFileUpload = async (file) => {
     if (!file) return;
 
@@ -115,13 +114,15 @@ const CropPhotos = () => {
         publicId: publicId,
         createdAt: Timestamp.now(),
         userId: user ? user.uid : null,
+        cropName: "Sample Crop", // ✅ Placeholder
+        cropType: "Vegetable",   // ✅ Placeholder
       });
 
-      setSuccess(" Uploaded!");
+      setSuccess("✅ Uploaded!");
       setPreview(null);
     } catch (err) {
       console.error("Upload error:", err);
-      setError(" Upload failed.");
+      setError("❌ Upload failed.");
     } finally {
       setUploading(false);
       setProgress(0);
@@ -152,78 +153,79 @@ const CropPhotos = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* 🌿 Gallery */}
+      {/* 🌿 Title */}
       <h2 className="text-3xl font-extrabold text-green-700 mb-8 text-center">
-         Crop Gallery
+        Crop Gallery
       </h2>
 
+      {/* 🌱 Gallery */}
       {loading ? (
         <p className="text-center text-green-600">⏳ Loading...</p>
       ) : photos.length === 0 ? (
         <p className="text-center text-gray-500">📭 No photos yet.</p>
       ) : (
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16 crop-gallery">
           {photos.map((photo) => (
-            <div
-              key={photo.id}
-              className="relative group break-inside-avoid overflow-hidden rounded-xl shadow-md hover:shadow-2xl transform hover:-translate-y-1 transition duration-300"
-            >
+            <div key={photo.id} className="crop-card relative group">
+              {/* 📷 Image */}
               <img
                 src={photo.url}
                 alt="Crop"
-                className="w-full rounded-xl object-cover cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => setSelected(photo.url)}
               />
               {/* Overlay */}
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition flex flex-col justify-between p-3 rounded-xl">
+              <div className="overlay">
                 <p className="text-xs text-white">
                   {photo.createdAt?.toDate
                     ? new Date(photo.createdAt.toDate()).toLocaleString()
                     : "Unknown date"}
                 </p>
                 <button
-                  className="bg-red-600 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-700 self-end"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(photo.id);
                   }}
+                  className="delete-btn"
                 >
                   🗑 Delete
                 </button>
               </div>
-              {/* Uploader */}
-              <div className="flex items-center space-x-2 mt-2 px-1">
+
+              {/* 📑 Caption */}
+              <div className="caption">
+                <h3>{photo.cropName || "Unnamed Crop"}</h3>
+                <p>{photo.cropType || "Unknown Type"}</p>
+              </div>
+
+              {/* 👤 Uploader */}
+              <div className="uploader">
                 {photo.uploader.avatar ? (
                   <img
                     src={photo.uploader.avatar}
                     alt={photo.uploader.name}
-                    className="w-8 h-8 rounded-full border border-gray-500"
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-sm text-white">
                     {photo.uploader.name[0]}
                   </div>
                 )}
-                <p className="text-sm text-gray-700">{photo.uploader.name}</p>
+                <p>{photo.uploader.name}</p>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* 📤 Upload Dropzone */}
+      {/* 📤 Upload Box */}
       <div
-        className="w-full bg-gradient-to-r from-green-100 to-green-200 p-10 rounded-2xl shadow-xl text-center border-2 border-dashed border-green-600 hover:border-green-800 cursor-pointer"
+        className="upload-box"
         onClick={() => fileInputRef.current.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
-        <h2 className="text-2xl font-bold text-green-700 mb-2">
-           Upload Your Crop Photo
-        </h2>
-        <p className="text-gray-600 text-sm mb-4">
-          Drag & drop your photo here or click inside this area
-        </p>
+        <h2>Upload Your Crop Photo</h2>
+        <p>Drag & drop your photo here or click inside this area</p>
 
         <input
           type="file"
@@ -234,27 +236,21 @@ const CropPhotos = () => {
         />
 
         {uploading && (
-          <div className="mt-4 w-full bg-gray-200 rounded-full">
-            <div
-              className="bg-green-600 h-2 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
-            ></div>
+          <div className="upload-progress">
+            <div className="bar" style={{ width: `${progress}%` }}></div>
           </div>
         )}
 
-        {preview && (
-          <img
-            src={preview}
-            alt="Preview"
-            className="mt-4 rounded-lg shadow-md w-full max-h-80 object-cover"
-          />
-        )}
+        {preview && <img src={preview} alt="Preview" />}
 
         {success && <p className="mt-2 text-green-600">{success}</p>}
         {error && <p className="mt-2 text-red-600">{error}</p>}
+
+        {/* 🌟 Fancy Upload Button */}
+        <button className="upload-action-btn">📤 Upload Photo</button>
       </div>
 
-      {/* 🔍 Modal Preview */}
+      {/* 🔍 Modal */}
       {selected && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"

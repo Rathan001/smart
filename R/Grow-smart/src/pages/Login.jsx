@@ -50,7 +50,7 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card" style={{ maxWidth: '500px' }}>
-        <h1 className="auth-title">Welcome Back</h1>
+        <h1 className="auth-title"> Welcome Back</h1>
         <p className="text-center text-secondary mb-4">
           Sign in to your GrowSmart account
         </p>
