@@ -1,7 +1,7 @@
 // src/components/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,24 +25,9 @@ const Dashboard = () => {
 
   // Crop-specific care rules
   const cropCareRules = {
-    tomato: {
-      watering: { needs: 'high' },
-      fertilizing: { stage: 'flowering' },
-      pruning: { stage: 'growing' },
-      harvest: { stage: 'ready' }
-    },
-    spinach: {
-      watering: { needs: 'medium' },
-      fertilizing: { stage: 'growing' },
-      pruning: null,
-      harvest: { stage: 'ready' }
-    },
-    basil: {
-      watering: { needs: 'low' },
-      fertilizing: { stage: 'growing' },
-      pruning: { stage: 'growing' },
-      harvest: { stage: 'ready' }
-    }
+    tomato: { watering: { needs: 'high' }, fertilizing: { stage: 'flowering' }, pruning: { stage: 'growing' }, harvest: { stage: 'ready' } },
+    spinach: { watering: { needs: 'medium' }, fertilizing: { stage: 'growing' }, pruning: null, harvest: { stage: 'ready' } },
+    basil: { watering: { needs: 'low' }, fertilizing: { stage: 'growing' }, pruning: { stage: 'growing' }, harvest: { stage: 'ready' } }
   };
 
   // Fetch current weather
@@ -253,7 +238,22 @@ const Dashboard = () => {
             <h2>Recent Crops</h2>
             <Link to="/crops" className="btn btn-outline">View All</Link>
           </div>
-          {/* ✅ Hide crop details list, just show header + button */}
+          <div className="crops-list">
+            {recentCrops.length > 0 && (
+              <div key={recentCrops[0].id} className="crop-item">
+                <div className="crop-info">
+                  <h4>{recentCrops[0].name}</h4>
+                  <p className="crop-variety">{recentCrops[0].variety || "Normal"}</p>
+                  <p className="crop-date">
+                    Planted: {recentCrops[0].datePlanted ? new Date(recentCrops[0].datePlanted).toLocaleDateString() : "N/A"}
+                  </p>
+                </div>
+                <div className="crop-status">
+                  <span className={getStatusBadgeClass(recentCrops[0].status)}>{recentCrops[0].status}</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Tasks */}
