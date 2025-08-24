@@ -1,9 +1,8 @@
-// src/pages/AdminDashboard.jsx
-
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+
 
 const AdminDashboard = () => {
   const [crops, setCrops] = useState([]);
@@ -55,23 +54,6 @@ const AdminDashboard = () => {
     navigate("/admin-login");
   };
 
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case "ready":
-        return "bg-green-500 text-white";
-      case "flowering":
-        return "bg-pink-500 text-white";
-      case "fruiting":
-        return "bg-purple-500 text-white";
-      case "growing":
-        return "bg-yellow-500 text-black";
-      case "germinating":
-        return "bg-blue-500 text-white";
-      default:
-        return "bg-gray-400 text-white";
-    }
-  };
-
   const getDaysPlanted = (datePlanted) => {
     const planted = new Date(datePlanted);
     const today = new Date();
@@ -92,54 +74,44 @@ const AdminDashboard = () => {
   });
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="admin-dashboard">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="admin-header">
         <div>
-          <h1 className="text-3xl font-bold text-green-700">🛡️ Admin Dashboard</h1>
-          <p className="text-gray-600">Manage crops & users efficiently</p>
+          <h1>🛡️ Admin Dashboard</h1>
+          <p>Manage crops & users efficiently</p>
         </div>
-        <button
-          onClick={handleLogout}
-          className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-md transition"
-        >
+        <button onClick={handleLogout} className="logout-btn">
           Logout
         </button>
       </div>
 
       {loading ? (
-        <p className="text-gray-600">Loading admin data...</p>
+        <p className="text-gray">Loading admin data...</p>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-error">{error}</p>
       ) : (
         <>
           {/* Users List */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold mb-3">👥 Registered Users</h2>
-            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="user-list">
+            <h2>👥 Registered Users</h2>
+            <ul className="user-grid">
               {users.map((user) => (
-                <li
-                  key={user.id}
-                  className="p-3 border rounded-md bg-gray-100 hover:shadow-md transition"
-                >
+                <li key={user.id} className="user-card">
                   <strong>{user.name || "No Name"}</strong>
-                  <span className="text-sm text-gray-600">
-                    {" "}
-                    ({user.email || "No Email"})
-                  </span>
+                  <span> ({user.email || "No Email"})</span>
                   <br />
-                  <small className="text-gray-500">UID: {user.id}</small>
+                  <small>UID: {user.id}</small>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Filters */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-6 flex gap-4">
+          <div className="filter-box">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="p-2 border rounded-md shadow-sm"
             >
               <option value="all">All Status</option>
               <option value="germinating">🌱 Germinating</option>
@@ -151,7 +123,6 @@ const AdminDashboard = () => {
             <select
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
-              className="p-2 border rounded-md shadow-sm"
             >
               <option value="all">All Users</option>
               {users.map((user) => (
@@ -163,37 +134,30 @@ const AdminDashboard = () => {
           </div>
 
           {/* Crops Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="crops-grid">
             {filteredCrops.map((crop) => (
-              <div
-                key={crop.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-1"
-              >
+              <div key={crop.id} className="crop-card">
                 {/* Crop Image */}
                 {crop.photoUrl && (
                   <img
                     src={crop.photoUrl}
                     alt={crop.name}
-                    className="w-full h-40 object-cover cursor-pointer hover:opacity-90"
+                    className="crop-image"
                     onClick={() => setSelectedImage(crop.photoUrl)}
                   />
                 )}
 
                 {/* Crop Details */}
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-bold text-gray-800">{crop.name}</h3>
-                    <span
-                      className={`px-2 py-1 text-xs rounded-md ${getStatusBadgeClass(
-                        crop.status
-                      )}`}
-                    >
+                <div className="crop-details">
+                  <div className="crop-header">
+                    <h3>{crop.name}</h3>
+                    <span className={`status-badge ${crop.status}`}>
                       {crop.status}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 italic">{crop.variety}</p>
+                  <p className="italic">{crop.variety}</p>
 
-                  <div className="mt-3 text-sm text-gray-700 space-y-1">
+                  <div className="crop-meta">
                     <p>
                       👤 <strong>Owner:</strong> {getUserNameById(crop.ownerId)}
                     </p>
@@ -209,11 +173,8 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* Delete Button */}
-                  <div className="flex justify-end mt-4">
-                    <button
-                      onClick={() => handleDelete(crop.id)}
-                      className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm shadow"
-                    >
+                  <div className="crop-actions">
+                    <button onClick={() => handleDelete(crop.id)} className="delete-btn">
                       🗑️ Delete
                     </button>
                   </div>
@@ -226,15 +187,8 @@ const AdminDashboard = () => {
 
       {/* Modal for Image Preview */}
       {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
-        >
-          <img
-            src={selectedImage}
-            alt="Preview"
-            className="max-w-2xl max-h-[80vh] rounded-lg shadow-2xl"
-          />
+        <div className="image-modal" onClick={() => setSelectedImage(null)}>
+          <img src={selectedImage} alt="Preview" />
         </div>
       )}
     </div>

@@ -97,7 +97,6 @@ const CropCare = () => {
         crops.forEach((crop) => {
           const care = cropCareData[crop.name] || { water: "Custom", care: "Monitor growth" };
           const plantDate = new Date(crop.datePlanted);
-          // Example tasks
           tasks.push({
             date: new Date(plantDate.getTime() + 3 * 24 * 60 * 60 * 1000),
             task: `💧 Water ${crop.name} (${care.water})`,
@@ -128,15 +127,15 @@ const CropCare = () => {
   if (loading) return <p className="text-center text-lg">Loading crop care data...</p>;
 
   return (
-    <div className="p-8 bg-gradient-to-br from-green-100 via-green-50 to-white min-h-screen">
-      <h1 className="text-4xl font-bold text-green-900 text-center mb-8 drop-shadow-md">
+    <div className="crop-care-page p-8 bg-gradient-to-br from-green-100 via-green-50 to-white min-h-screen fade-in">
+      <h1 className="text-4xl font-bold text-green-900 text-center mb-8 drop-shadow-md section-title">
         🌱 Smart Crop Care Dashboard
       </h1>
 
       {/* Weather */}
       {weather && (
-        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-6 mb-8 border-l-4 border-green-400">
-          <h2 className="text-2xl font-semibold mb-3 text-green-800">Current Weather</h2>
+        <div className="weather-card max-w-4xl mx-auto mb-8 fade-in">
+          <h2 className="section-title">Current Weather</h2>
           <div className="flex justify-between text-lg">
             <p>🌡️ Temp: {weather.main?.temp}°C</p>
             <p>💧 Humidity: {weather.main?.humidity}%</p>
@@ -146,12 +145,12 @@ const CropCare = () => {
       )}
 
       {/* Forecast */}
-      <div className="max-w-6xl mx-auto mb-10">
-        <h2 className="text-2xl font-semibold text-green-800 mb-5 text-center">📅 3-Day Forecast</h2>
+      <div className="max-w-6xl mx-auto mb-10 fade-in">
+        <h2 className="section-title text-center">📅 3-Day Forecast</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {forecastDays.map((day, idx) => (
-            <div key={idx} className="bg-white shadow-md rounded-xl p-5 border-l-4 border-green-400">
-              <h3 className="text-xl font-bold text-green-800 mb-2">{day.date}</h3>
+            <div key={idx} className="forecast-card">
+              <h3>{day.date}</h3>
               <p>🌡️ {day.avgTemp}°C</p>
               <p>💧 {day.avgHumidity}% humidity</p>
               <p>☁️ {day.condition}</p>
@@ -161,16 +160,16 @@ const CropCare = () => {
       </div>
 
       {/* User Crops & Care */}
-      <h2 className="text-2xl font-semibold text-green-800 mb-5 text-center">🌾 Your Crops & Care Tips</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <h2 className="section-title text-center">🌾 Your Crops & Care Tips</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 fade-in">
         {userCrops.map((crop) =>
           forecastDays.map((day, idx) => {
             const suggestion = cropCareData[crop.name] || { water: "Custom", sunlight: "4–6h", care: "Monitor growth" };
             return (
-              <div key={`${crop.id}-${idx}`} className="bg-white shadow-md rounded-xl p-5 border-l-4 border-green-600">
-                <h3 className="text-xl font-bold text-green-800 mb-2">{crop.name} – {day.date}</h3>
-                <p className="text-gray-600 mb-1">Planted: {crop.datePlanted || "N/A"}</p>
-                <p className="text-gray-600 mb-1">Container: {crop.containerSize || "N/A"}</p>
+              <div key={`${crop.id}-${idx}`} className="crop-card">
+                <h3>{crop.name} – {day.date}</h3>
+                <p>Planted: {crop.datePlanted || "N/A"}</p>
+                <p>Container: {crop.containerSize || "N/A"}</p>
                 <div className="mt-2 text-base">
                   <p><strong>💧 Watering:</strong> {suggestion.water}</p>
                   <p><strong>☀️ Sunlight:</strong> {suggestion.sunlight}</p>
@@ -183,8 +182,8 @@ const CropCare = () => {
       </div>
 
       {/* 📅 Calendar View */}
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-6 mb-8 border-l-4 border-green-500">
-        <h2 className="text-2xl font-semibold text-green-800 mb-3">📌 Crop Care Calendar</h2>
+      <div className="calendar-card max-w-4xl mx-auto mb-8 fade-in">
+        <h2 className="section-title">📌 Crop Care Calendar</h2>
         <Calendar
           onChange={setSelectedDate}
           value={selectedDate}

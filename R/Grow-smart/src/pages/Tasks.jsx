@@ -90,9 +90,9 @@ export default function Tasks() {
           crop.wateringFrequency &&
           diffDays % parseInt(crop.wateringFrequency) === 0
         ) {
-          const msg = `💧 Water your ${crop.name} today (every ${crop.wateringFrequency} day(s))`;
+          const msg = `Water your ${crop.name} today (every ${crop.wateringFrequency} day(s))`;
           pushNotification(
-            "Crop Reminder 🌱",
+            "Crop Reminder",
             msg,
             "https://cdn-icons-png.flaticon.com/512/616/616408.png"
           );
@@ -103,9 +103,9 @@ export default function Tasks() {
           crop.fertilizingFrequency &&
           diffDays % parseInt(crop.fertilizingFrequency) === 0
         ) {
-          const msg = `🌱 Fertilize your ${crop.name} today (every ${crop.fertilizingFrequency} day(s))`;
+          const msg = `Fertilize your ${crop.name} today (every ${crop.fertilizingFrequency} day(s))`;
           pushNotification(
-            "Crop Reminder 🌱",
+            "Crop Reminder",
             msg,
             "https://cdn-icons-png.flaticon.com/512/2900/2900521.png"
           );
@@ -171,7 +171,7 @@ export default function Tasks() {
         showToast(msg);
 
         if (Notification.permission === "granted") {
-          new Notification("📌 Task Reminder", {
+          new Notification("Task Reminder", {
             body: msg,
             icon: "https://cdn-icons-png.flaticon.com/512/942/942751.png",
           });
@@ -201,7 +201,7 @@ export default function Tasks() {
           const rainExpected = weatherCondition.includes("rain");
 
           if (rainExpected) {
-            const message = "🌧️ Rain expected. Skip watering tasks.";
+            const message = "Rain expected. Skip watering tasks.";
             pushNotification(
               "Garden Reminder",
               message,
@@ -301,8 +301,12 @@ export default function Tasks() {
 
       {/* Toast Popup */}
       <div className="toast-container">
-        {toastQueue.map((toast) => (
-          <div key={toast.id} className="toast">
+        {toastQueue.map((toast, index) => (
+          <div
+            key={toast.id}
+            className="toast"
+            style={{ "--delay": `${index * 0.5}s` }}
+          >
             {toast.message}
           </div>
         ))}
