@@ -10,13 +10,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import LogWatering from "./LogWatering";
 import "../styles/LogWatering.css";
 
-
 const Dashboard = () => {
   const [recentCrops, setRecentCrops] = useState([]);
   const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [weatherData, setWeatherData] = useState(null);
   const [rainExpected, setRainExpected] = useState(false);
   const [rescheduledWateringCount, setRescheduledWateringCount] = useState(0);
+  const [successRate, setSuccessRate] = useState(0);
+  const [harvestCount, setHarvestCount] = useState(0);
 
   const db = getFirestore();
   const auth = getAuth();
@@ -65,7 +66,7 @@ const Dashboard = () => {
     }
   };
 
-  // Smart task generation based on crop type + weather
+  // Smart task generation
   const generateTasksForCrops = (crops, weather) => {
     const today = new Date().toISOString().split('T')[0];
     const tasks = [];
@@ -127,11 +128,20 @@ const Dashboard = () => {
   // Fetch crops and generate tasks
   const fetchUserData = async (userId) => {
     try {
-      const cropsRef = query(collection(db, 'crops'), where('userId', '==', userId));
+      const cropsRef = query(collection(db, 'crops'), where('ownerId', '==', userId));
       const cropsSnap = await getDocs(cropsRef);
       const crops = cropsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
       setRecentCrops(crops);
+
+      // ✅ Compute success rate & harvests
+      const successfulStatuses = ["ready", "harvested", "healthy", "fruiting"];
+      const harvested = crops.filter(c =>
+        successfulStatuses.includes(c.status?.toLowerCase())
+      );
+
+      setHarvestCount(harvested.length);
+      setSuccessRate(crops.length > 0 ? Math.round((harvested.length / crops.length) * 100) : 0);
 
       const weather = await fetchWeatherData();
       if (!weather) return;
@@ -139,7 +149,13 @@ const Dashboard = () => {
       const smartTasks = generateTasksForCrops(crops, weather);
       const adjustedTasks = filterTasksByWeather(smartTasks);
       setUpcomingTasks(adjustedTasks);
-      console.log('Upcoming Tasks:', adjustedTasks);
+
+      if (adjustedTasks.length > 0) {
+        toast.info(`You have ${adjustedTasks.length} upcoming tasks!`, {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      }
     } catch (err) {
       console.error('Firebase fetch error:', err);
     }
@@ -150,51 +166,27 @@ const Dashboard = () => {
       try {
         const user = auth.currentUser;
         if (!user) throw new Error('User not authenticated');
-
-        const cropsRef = query(collection(db, 'crops'), where('userId', '==', user.uid));
-        const cropsSnap = await getDocs(cropsRef);
-        const crops = cropsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-        setRecentCrops(crops);
-
-        const weather = await fetchWeatherData();
-        if (!weather) return;
-
-        const tasks = generateTasksForCrops(crops, weather);
-        const adjustedTasks = filterTasksByWeather(tasks);
-        setUpcomingTasks(adjustedTasks);
-
-        // Trigger notifications for tasks
-        if (adjustedTasks.length > 0) {
-          toast.info(`You have ${adjustedTasks.length} upcoming tasks!`, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
+        await fetchUserData(user.uid);
       } catch (err) {
         console.error('Error fetching user data or tasks:', err);
       }
     };
-
     fetchUserDataAndTasks();
   }, []);
 
-  // Request notification permission on mount
+  // Request notification permission
   useEffect(() => {
     if (Notification.permission !== 'granted') {
       Notification.requestPermission();
     }
   }, []);
 
-  // Badge classes
   const getStatusBadgeClass = (status) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case 'ready': return 'status-badge status-success';
+      case 'harvested': return 'status-badge status-success';
+      case 'healthy': return 'status-badge status-info';
+      case 'fruiting': return 'status-badge status-info';
       case 'flowering': return 'status-badge status-info';
       case 'growing': return 'status-badge status-warning';
       default: return 'status-badge';
@@ -209,22 +201,6 @@ const Dashboard = () => {
       default: return 'status-badge';
     }
   };
-
-  const mockCrops = [
-    { id: '1', name: 'Tomato', status: 'growing' },
-    { id: '2', name: 'Spinach', status: 'flowering' },
-  ];
-
-  const mockWeather = {
-    current: {
-      condition: { text: 'Sunny' },
-      temp_c: 30,
-      humidity: 50,
-    },
-  };
-
-  const tasks = generateTasksForCrops(mockCrops, mockWeather);
-  console.log('Mock Tasks:', tasks);
 
   return (
     <div className="dashboard">
@@ -260,11 +236,11 @@ const Dashboard = () => {
           <div className="stat-label">Pending Tasks</div>
         </div>
         <div className="card text-center">
-          <div className="stat-number">8</div>
+          <div className="stat-number">{harvestCount}</div>
           <div className="stat-label">This Month's Harvests</div>
         </div>
         <div className="card text-center">
-          <div className="stat-number">85%</div>
+          <div className="stat-number">{successRate}%</div>
           <div className="stat-label">Success Rate</div>
         </div>
       </div>
@@ -277,23 +253,7 @@ const Dashboard = () => {
             <h2>Recent Crops</h2>
             <Link to="/crops" className="btn btn-outline">View All</Link>
           </div>
-          <div className="crops-list">
-            {recentCrops.map((crop) => (
-              <div key={crop.id} className="crop-item">
-                <div className="crop-info">
-                  <h4>{crop.name}</h4>
-                  <p className="crop-variety">{crop.variety}</p>
-                  <p className="crop-date">Planted: {new Date(crop.datePlanted).toLocaleDateString()}</p>
-                </div>
-                <div className="crop-status">
-                  <span className={getStatusBadgeClass(crop.status)}>{crop.status}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-md">
-            <Link to="/add-crop" className="btn btn-primary">+ Add New Crop</Link>
-          </div>
+          {/* ✅ Hide crop details list, just show header + button */}
         </div>
 
         {/* Tasks */}
@@ -328,7 +288,6 @@ const Dashboard = () => {
         <div className="flex gap-md mt-md">
           <Link to="/add-crop" className="btn btn-primary">Add New Crop</Link>
           <Link to="/weather" className="btn btn-secondary">Check Weather</Link>
-          {/* ✅ Replace placeholder with LogWatering component */}
           <LogWatering />
           <button onClick={() => navigate('/add-photo')} className="btn btn-outline">📸 Add Photo</button>
         </div>
