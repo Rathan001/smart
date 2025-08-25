@@ -42,7 +42,7 @@ export default function Tasks() {
 
   // Toast popup handler
   const showToast = (message) => {
-    const id = Date.now();
+    const id = `${Date.now()}-${Math.random()}`; // ✅ unique id
     setToastQueue((prev) => [...prev, { id, message }]);
     setTimeout(() => {
       setToastQueue((prev) => prev.filter((toast) => toast.id !== id));
@@ -51,7 +51,8 @@ export default function Tasks() {
 
   const pushNotification = (title, message, icon) => {
     // Add to UI
-    setNotifications((prev) => [...prev, { id: Date.now(), message }]);
+    const id = `${Date.now()}-${Math.random()}`; // ✅ unique id
+    setNotifications((prev) => [...prev, { id, message }]);
 
     // Show toast
     showToast(message);
@@ -154,7 +155,7 @@ export default function Tasks() {
       );
 
       const notificationsList = allTasks.map((task) => ({
-        id: task.id,
+        id: `${task.id}-${Math.random()}`, // ✅ ensure unique
         message: `${task.task} - ${
           task.dueDate ? `Due: ${task.dueDate}` : "No due date"
         }`,
@@ -259,8 +260,11 @@ export default function Tasks() {
         <p className="no-tasks-text">No {title.toLowerCase()} yet.</p>
       ) : (
         <div className="tasks-grid">
-          {tasks.map((task) => (
-            <div key={task.id} className={`task-card ${cardClass}`}>
+          {tasks.map((task, index) => (
+            <div
+              key={`${task.id}-${index}`} // ✅ unique key
+              className={`task-card ${cardClass}`}
+            >
               <div>
                 <p className="task-name">{task.task}</p>
                 {task.priority && (
@@ -303,7 +307,7 @@ export default function Tasks() {
       <div className="toast-container">
         {toastQueue.map((toast, index) => (
           <div
-            key={toast.id}
+            key={`${toast.id}-${index}`} // ✅ unique key
             className="toast"
             style={{ "--delay": `${index * 0.5}s` }}
           >
@@ -319,8 +323,11 @@ export default function Tasks() {
           <p className="no-tasks-text">No notifications yet.</p>
         ) : (
           <ul className="notifications-list">
-            {notifications.map((notification) => (
-              <li key={notification.id} className="notification-item">
+            {notifications.map((notification, index) => (
+              <li
+                key={`${notification.id}-${index}`} // ✅ unique key
+                className="notification-item"
+              >
                 {notification.message}
               </li>
             ))}

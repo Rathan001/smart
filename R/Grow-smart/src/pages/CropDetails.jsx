@@ -98,6 +98,7 @@ const CropDetails = () => {
         date: when.toISOString(),
         notes: newEvent.notes,
         photos: [],
+        ownerId: user.uid,
         userId: user.uid,
         createdAt: serverTimestamp(),
       };
@@ -153,6 +154,7 @@ const CropDetails = () => {
         publicId,
         createdAt: serverTimestamp(),
         userId: user?.uid || "unknown",
+        ownerId: user?.uid || "unknown", 
       });
 
       // Save also to global gallery
@@ -161,6 +163,7 @@ const CropDetails = () => {
         publicId,
         createdAt: serverTimestamp(),
         userId: user?.uid || "unknown",
+        ownerId: user?.uid || "unknown", 
         cropId: id,
         cropName: crop?.name || "Unknown Crop",
         cropType: crop?.variety || "Unknown Type",

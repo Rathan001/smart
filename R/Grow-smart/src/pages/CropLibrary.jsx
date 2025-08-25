@@ -1,7 +1,7 @@
 // src/pages/CropLibrary.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 
@@ -17,7 +17,11 @@ const CropLibrary = () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          const cropsRef = collection(db, 'users', user.uid, 'crops');
+          // ✅ Fetch from global crops collection using ownerId
+          const cropsRef = query(
+            collection(db, 'crops'),
+            where('ownerId', '==', user.uid)
+          );
           const snapshot = await getDocs(cropsRef);
           const userCrops = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           setCrops(userCrops);
@@ -39,8 +43,8 @@ const CropLibrary = () => {
 
     if (searchTerm) {
       filtered = filtered.filter(crop =>
-        crop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        crop.variety.toLowerCase().includes(searchTerm.toLowerCase())
+        crop.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        crop.variety?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -76,11 +80,11 @@ const CropLibrary = () => {
   };
 
   const getDaysPlanted = (datePlanted) => {
+    if (!datePlanted) return 0;
     const planted = new Date(datePlanted);
     const today = new Date();
     const diffTime = Math.abs(today - planted);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   return (
@@ -164,8 +168,10 @@ const CropLibrary = () => {
                   <div className="detail-row">
                     <span className="detail-label">📅 Planted:</span>
                     <span className="detail-value">
-                      {new Date(crop.datePlanted).toLocaleDateString()}<br />
-                      <small>({getDaysPlanted(crop.datePlanted)} days ago)</small>
+                      {crop.datePlanted ? new Date(crop.datePlanted).toLocaleDateString() : "N/A"}<br />
+                      {crop.datePlanted && (
+                        <small>({getDaysPlanted(crop.datePlanted)} days ago)</small>
+                      )}
                     </span>
                   </div>
 

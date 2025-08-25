@@ -59,6 +59,7 @@ const AddCrop = () => {
       const cropData = {
         ...formData,
         id: cropId,
+        userId: user.uid,
         ownerId: user.uid,
         season: new Date().getMonth() < 6 ? 'Spring/Summer' : 'Fall/Winter',
         createdAt: new Date().toISOString()

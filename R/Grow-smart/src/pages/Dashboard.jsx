@@ -1,7 +1,7 @@
 // src/components/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getFirestore, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,9 +13,6 @@ import "../styles/LogWatering.css";
 const Dashboard = () => {
   const [recentCrops, setRecentCrops] = useState([]);
   const [upcomingTasks, setUpcomingTasks] = useState([]);
-  const [weatherData, setWeatherData] = useState(null);
-  const [rainExpected, setRainExpected] = useState(false);
-  const [rescheduledWateringCount, setRescheduledWateringCount] = useState(0);
   const [successRate, setSuccessRate] = useState(0);
   const [harvestCount, setHarvestCount] = useState(0);
 
@@ -23,96 +20,40 @@ const Dashboard = () => {
   const auth = getAuth();
   const navigate = useNavigate();
 
-  // Crop-specific care rules
+  // Crop-specific care rules (basic, static for now)
   const cropCareRules = {
     tomato: { watering: { needs: 'high' }, fertilizing: { stage: 'flowering' }, pruning: { stage: 'growing' }, harvest: { stage: 'ready' } },
     spinach: { watering: { needs: 'medium' }, fertilizing: { stage: 'growing' }, pruning: null, harvest: { stage: 'ready' } },
     basil: { watering: { needs: 'low' }, fertilizing: { stage: 'growing' }, pruning: { stage: 'growing' }, harvest: { stage: 'ready' } }
   };
 
-  // Fetch current weather
-  const fetchWeatherData = async () => {
-    try {
-      const proxy = 'https://api.allorigins.win/get?url=';
-      const target = encodeURIComponent(
-        'https://api.weatherapi.com/v1/current.json?key=473ebbd3153406298c57634962adefc6&q=Delhi'
-      );
-      const response = await fetch(`${proxy}${target}`);
-      const result = await response.json();
-      const data = JSON.parse(result.contents);
-
-      setWeatherData(data);
-      const isRainy = data.current?.condition?.text?.toLowerCase()?.includes('rain');
-      setRainExpected(isRainy);
-      return data;
-    } catch (error) {
-      console.error('Weather fetch error:', error);
-      return null;
-    }
-  };
-
-  // Smart task generation
-  const generateTasksForCrops = (crops, weather) => {
+  // ✅ Generate static tasks for demo (no weather)
+  const generateTasksForCrops = (crops) => {
     const today = new Date().toISOString().split('T')[0];
     const tasks = [];
-    const isRaining = weather.current?.condition?.text?.toLowerCase()?.includes('rain');
-    const temp = weather.current?.temp_c || 0;
-    const humidity = weather.current?.humidity || 0;
 
     crops.forEach(crop => {
       const rules = cropCareRules[crop.name?.toLowerCase()];
       if (!rules) return;
 
-      // WATERING
-      if (!isRaining) {
-        if (
-          (rules.watering.needs === 'high' && humidity < 80) ||
-          (rules.watering.needs === 'medium' && humidity < 70) ||
-          (rules.watering.needs === 'low' && humidity < 50)
-        ) {
-          tasks.push({
-            id: `water-${crop.id}`,
-            task: 'Watering',
-            cropName: crop.name,
-            type: 'watering',
-            priority: temp > 30 ? 'high' : 'medium',
-            dueDate: today
-          });
-        }
-      }
+      // Example: always suggest watering task
+      tasks.push({
+        id: `water-${crop.id}`,
+        task: 'Watering',
+        cropName: crop.name,
+        type: 'watering',
+        priority: 'medium',
+        dueDate: today
+      });
     });
 
     return tasks;
   };
 
-  // Apply weather-aware scheduling
-  const filterTasksByWeather = (tasks) => {
-    if (!weatherData) return tasks;
-    const isRainy = weatherData.current?.condition?.text?.toLowerCase()?.includes('rain');
-    const adjusted = [];
-    let rescheduledCount = 0;
-
-    for (const task of tasks) {
-      if ((task.type === 'watering' || task.type === 'fertilizing') && isRainy) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        adjusted.push({
-          ...task,
-          dueDate: tomorrow.toISOString().split('T')[0],
-          rescheduled: true,
-        });
-        rescheduledCount++;
-      } else {
-        adjusted.push(task);
-      }
-    }
-    setRescheduledWateringCount(rescheduledCount);
-    return adjusted;
-  };
-
-  // Fetch crops and generate tasks
+  // ✅ Fetch crops and compute stats
   const fetchUserData = async (userId) => {
     try {
+      // ✅ Fetch crops
       const cropsRef = query(collection(db, 'crops'), where('ownerId', '==', userId));
       const cropsSnap = await getDocs(cropsRef);
       const crops = cropsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -128,15 +69,11 @@ const Dashboard = () => {
       setHarvestCount(harvested.length);
       setSuccessRate(crops.length > 0 ? Math.round((harvested.length / crops.length) * 100) : 0);
 
-      const weather = await fetchWeatherData();
-      if (!weather) return;
+      const smartTasks = generateTasksForCrops(crops);
+      setUpcomingTasks(smartTasks);
 
-      const smartTasks = generateTasksForCrops(crops, weather);
-      const adjustedTasks = filterTasksByWeather(smartTasks);
-      setUpcomingTasks(adjustedTasks);
-
-      if (adjustedTasks.length > 0) {
-        toast.info(`You have ${adjustedTasks.length} upcoming tasks!`, {
+      if (smartTasks.length > 0) {
+        toast.info(`You have ${smartTasks.length} upcoming tasks!`, {
           position: "top-right",
           autoClose: 5000,
         });
@@ -199,16 +136,9 @@ const Dashboard = () => {
       <div className="card mb-md">
         <ul className="text-base leading-relaxed">
           <li>▶ Auto-generated care tasks (watering, fertilizing, pruning, harvesting)</li>
-          <li>▶ Weather-Aware Scheduling</li>
           <li>▶ Crop-specific recommendations</li>
         </ul>
       </div>
-
-      {rainExpected && rescheduledWateringCount > 0 && (
-        <div className="alert alert-warning mb-md">
-          <strong>{rescheduledWateringCount}</strong> watering task(s) rescheduled to tomorrow due to expected rain.
-        </div>
-      )}
 
       {/* Stats */}
       <div className="grid grid-cols-4 mb-lg">
@@ -269,9 +199,6 @@ const Dashboard = () => {
                   <h4>{task.task}</h4>
                   <p className="task-crop">For: {task.cropName}</p>
                   <p className="task-due">Due: {task.dueDate}</p>
-                  {task.rescheduled && (
-                    <p className="text-xs text-yellow-700">Rescheduled due to rain</p>
-                  )}
                 </div>
                 <div className="task-priority">
                   <span className={getPriorityBadgeClass(task.priority)}>{task.priority}</span>

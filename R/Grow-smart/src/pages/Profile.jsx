@@ -1,7 +1,7 @@
 // FILE: /components/Profile.jsx
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../config/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import {
   BarChart,
@@ -31,6 +31,26 @@ const Profile = () => {
         const user = auth.currentUser;
         if (!user) throw new Error("User not authenticated");
 
+        // ✅ Try to get extra user profile from Firestore (if available)
+        let displayName =
+          user.displayName || user.email?.split("@")[0] || user.uid;
+
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userDocRef);
+          if (userSnap.exists()) {
+            const userInfo = userSnap.data();
+            if (userInfo.displayName) {
+              displayName = userInfo.displayName;
+            }
+            if (userInfo.name) {
+              displayName = userInfo.name; // fallback field if saved as "name"
+            }
+          }
+        } catch (fireErr) {
+          console.warn("No Firestore profile found, using auth info only");
+        }
+
         const cropsRef = collection(db, "users", user.uid, "crops");
         const crops = await getDocs(cropsRef);
         const cropData = crops.docs.map((doc) => doc.data());
@@ -44,7 +64,7 @@ const Profile = () => {
 
         setUserData({
           email: user.email,
-          displayName: user.displayName || "Anonymous",
+          displayName,
         });
         setCropHistory(cropData);
         setSeasonalData({ springSummer, fallWinter });

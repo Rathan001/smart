@@ -1,3 +1,4 @@
+// src/pages/CropPhotos.jsx
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -10,6 +11,7 @@ import {
   onSnapshot,
   deleteDoc,
   doc,
+  getDocs,
   getDoc,
 } from "firebase/firestore";
 import { firebaseApp } from "../config/firebase";
@@ -26,44 +28,56 @@ const CropPhotos = () => {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
 
+  // 🌱 Crop selection
+  const [userCrops, setUserCrops] = useState([]);
+  const [selectedCrop, setSelectedCrop] = useState(null);
+
   const CLOUD_NAME = "doosftwev";
   const UPLOAD_PRESET = "crop_photos";
 
   const db = getFirestore(firebaseApp);
   const auth = getAuth(firebaseApp);
 
+  // ✅ Fetch crops of current user
+  useEffect(() => {
+    const fetchUserCrops = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const cropsRef = collection(db, "users", user.uid, "crops");
+        const snapshot = await getDocs(cropsRef);
+        const cropsList = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+        setUserCrops(cropsList);
+        if (cropsList.length > 0) {
+          setSelectedCrop(cropsList[0].id); // default first crop
+        }
+      } catch (err) {
+        console.error("Error fetching crops:", err);
+      }
+    };
+    fetchUserCrops();
+  }, [auth.currentUser]);
+
   // ✅ Fetch photos
   useEffect(() => {
     const photosRef = collection(db, "photos");
     const q = query(photosRef, orderBy("createdAt", "desc"));
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const list = [];
-      for (const docSnap of snapshot.docs) {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list = snapshot.docs.map((docSnap) => {
         const photoData = docSnap.data();
-        let uploader = { name: "Unknown", avatar: "" };
-
-        if (photoData.userId) {
-          try {
-            const userRef = doc(db, "users", photoData.userId);
-            const userDoc = await getDoc(userRef);
-            if (userDoc.exists()) {
-              uploader = {
-                name: userDoc.data().name || "Farmer",
-                avatar: userDoc.data().photoURL || "",
-              };
-            }
-          } catch (err) {
-            console.error("User fetch error:", err);
-          }
-        }
-
-        list.push({
+        return {
           id: docSnap.id,
           ...photoData,
-          uploader,
-        });
-      }
+          uploader: {
+            name: photoData.uploaderName || "Unknown User",
+            avatar: photoData.uploaderAvatar || "",
+          },
+        };
+      });
       setPhotos(list);
       setLoading(false);
     });
@@ -109,13 +123,41 @@ const CropPhotos = () => {
       const publicId = res.data.public_id;
       const user = auth.currentUser;
 
+      // ✅ Get crop info
+      let cropName = "Sample Crop";
+      let cropType = "Vegetable";
+      if (selectedCrop) {
+        const crop = userCrops.find((c) => c.id === selectedCrop);
+        if (crop) {
+          cropName = crop.name || crop.cropName || "Unnamed Crop";
+          cropType = crop.type || crop.cropType || "Unknown Type";
+        }
+      }
+
+      // ✅ Fetch uploader name from Firestore profile
+      let uploaderName =
+        user?.displayName || user?.email?.split("@")[0] || user?.uid;
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDocRef);
+        if (userSnap.exists()) {
+          const userInfo = userSnap.data();
+          if (userInfo.displayName) uploaderName = userInfo.displayName;
+          if (userInfo.name) uploaderName = userInfo.name; // support "name" field too
+        }
+      } catch (err) {
+        console.warn("Could not fetch profile name, fallback used");
+      }
+
       await addDoc(collection(db, "photos"), {
         url: downloadURL,
-        publicId: publicId,
+        publicId,
         createdAt: Timestamp.now(),
         userId: user ? user.uid : null,
-        cropName: "Sample Crop", // ✅ Placeholder
-        cropType: "Vegetable",   // ✅ Placeholder
+        uploaderName,
+        uploaderAvatar: user?.photoURL || "",
+        cropName,
+        cropType,
       });
 
       setSuccess("✅ Uploaded!");
@@ -201,13 +243,10 @@ const CropPhotos = () => {
               {/* 👤 Uploader */}
               <div className="uploader">
                 {photo.uploader.avatar ? (
-                  <img
-                    src={photo.uploader.avatar}
-                    alt={photo.uploader.name}
-                  />
+                  <img src={photo.uploader.avatar} alt={photo.uploader.name} />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-sm text-white">
-                    {photo.uploader.name[0]}
+                    {photo.uploader.name ? photo.uploader.name[0] : "U"}
                   </div>
                 )}
                 <p>{photo.uploader.name}</p>
@@ -226,6 +265,22 @@ const CropPhotos = () => {
       >
         <h2>Upload Your Crop Photo</h2>
         <p>Drag & drop your photo here or click inside this area</p>
+
+        {/* ✅ Crop Picker */}
+        {userCrops.length > 0 && (
+          <select
+            value={selectedCrop || ""}
+            onChange={(e) => setSelectedCrop(e.target.value)}
+            className="border p-2 rounded mb-3"
+          >
+            {userCrops.map((crop) => (
+              <option key={crop.id} value={crop.id}>
+                {crop.name || crop.cropName || "Unnamed Crop"} (
+                {crop.type || crop.cropType || "Unknown"})
+              </option>
+            ))}
+          </select>
+        )}
 
         <input
           type="file"
